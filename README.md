@@ -1,14 +1,17 @@
-# Student ERP System
+# B.Tech Student ERP System
 
-An Enterprise Resource Planning (ERP) system tailored for colleges and universities offering **B.Tech (Bachelor of Technology)** programs.
+A full-stack Enterprise Resource Planning (ERP) application designed for colleges and universities offering **4-year B.Tech (Bachelor of Technology)** degree programs.
 
-## Features
-- **B.Tech Academic Management**: Configured for 4-year degree programs across 10 engineering branches (CSE, AI, IT, ECE, EEE, MECH, CIVIL, Materials, Bioengineering, Chemical).
-- **Automated Academic Performance**: Automatically computes and tracks student `average_marks` and letter grades using SQLite triggers.
-- **Strict Attendance Tracking**: Daily/course attendance logging strictly for `Present` and `Absent`.
-- **Fee Management**: Student fee invoicing, payment recording, and automated receipt generation.
+## Key Modules & Features
+- **10 B.Tech Engineering Branches**: Pre-configured for CSE, AI & Data Science, IT, ECE, EEE, Mechanical, Civil, Materials Engineering, Bioengineering, and Chemical Engineering.
+- **Automated Academic Performance**: Automatically computes and updates student `average_marks` directly in SQLite using database triggers.
+- **Strict Attendance Tracker**: Class-wise daily attendance supporting strictly **`Present`** and **`Absent`** with percentage calculations.
+- **Fee Management**: Student tuition fee invoices, payment processing, and printable receipt generation (`RCP-...`).
+- **Examinations & Transcripts**: Marks entry with automatic letter grade computation (`A+` to `F`) and student report cards.
 - **Role-Based Authentication**: Secure JWT-based access control with native password hashing (`admin`, `faculty`, `student`).
-- **RESTful API**: Fast and clean API built with Node.js and Express.
+- **Modern Responsive Dashboard**: Clean web interface built with React, Vite, Tailwind CSS, and Lucide icons.
+
+---
 
 ## Project Structure
 ```text
@@ -22,15 +25,37 @@ student-erp/
 │   │   └── server.js   # Server entrypoint
 │   ├── .env.example
 │   └── package.json
+├── frontend/           # React 18 + Vite + Tailwind CSS Dashboard
+│   ├── src/
+│   │   ├── components/ # Dashboard, Students, Attendance, Fees, Marks, Courses, Login
+│   │   ├── context/    # AuthContext (JWT & roles)
+│   │   ├── services/   # Centralized API service
+│   │   ├── App.jsx     # Main layout and view navigation
+│   │   └── main.jsx    # React entrypoint
+│   ├── index.html
+│   └── package.json
 └── README.md
 ```
 
-## Quick Start (Backend)
+---
+
+## Quick Start Guide
+
+### 1. Start the Backend (Port 5000)
+Open a terminal:
 ```powershell
 cd backend
 npm install
 npm run dev
 ```
-The server will run at `http://localhost:5000`.
-Default admin credentials: `admin` / `admin123`.
+Backend will run at `http://localhost:5000`.
+*Default Administrator*: `admin` / `admin123`.
 
+### 2. Start the Frontend (Port 5173)
+Open a second terminal:
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+Open **`http://localhost:5173`** in your browser to access the dashboard!
