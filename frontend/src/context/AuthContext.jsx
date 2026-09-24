@@ -30,13 +30,23 @@ export function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     const res = await api.login({ username, password });
-    if (res?.token) {
+    saveSession(res);
+    return res;
+  };
+
+  const register = async (userData) => {
+    const res = await api.register(userData);
+    saveSession(res);
+    return res;
+  };
+
+  const saveSession = (res) => {
+    if (res?.token && res?.user) {
       setToken(res.token);
       setUser(res.user);
       localStorage.setItem('erp_token', res.token);
       localStorage.setItem('erp_user', JSON.stringify(res.user));
     }
-    return res;
   };
 
   const logout = () => {
@@ -52,7 +62,7 @@ export function AuthProvider({ children }) {
   const isStudent = role === 'student';
 
   return (
-    <AuthContext.Provider value={{ user, token, role, isAdmin, isFaculty, isStudent, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, role, isAdmin, isFaculty, isStudent, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
@@ -65,4 +75,3 @@ export function useAuth() {
   }
   return context;
 }
-

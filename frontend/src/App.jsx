@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
@@ -8,18 +8,22 @@ import { Courses } from './components/Courses';
 import { Attendance } from './components/Attendance';
 import { Fees } from './components/Fees';
 import { Marks } from './components/Marks';
-import { LoginModal } from './components/LoginModal';
+import { AuthPage } from './components/AuthPage';
 import { LayoutDashboard, Users, GraduationCap, CalendarCheck, CreditCard, Award } from 'lucide-react';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState('dashboard');
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-sm font-medium text-slate-500">Loading your session...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar onOpenLogin={() => setIsLoginModalOpen(true)} />
+      <Navbar />
 
-      <div className="flex-1 flex">
+      {!user ? <AuthPage /> : <div className="flex-1 flex">
         <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full pb-20 md:pb-8">
@@ -30,10 +34,10 @@ function AppContent() {
           {currentTab === 'fees' && <Fees />}
           {currentTab === 'marks' && <Marks />}
         </main>
-      </div>
+      </div>}
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-1 flex justify-around items-center z-40">
+      {user && <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-1 flex justify-around items-center z-40">
         {[
           { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
           { id: 'students', label: 'Students', icon: Users },
@@ -56,12 +60,8 @@ function AppContent() {
             </button>
           );
         })}
-      </nav>
+      </nav>}
 
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
     </div>
   );
 }
@@ -73,4 +73,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
