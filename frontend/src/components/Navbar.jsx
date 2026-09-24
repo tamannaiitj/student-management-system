@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, User, LogIn, LogOut, GraduationCap } from 'lucide-react';
+import { User, LogOut, GraduationCap } from 'lucide-react';
 
-export function Navbar({ onOpenLogin }) {
+export function Navbar() {
   const { user, role, logout } = useAuth();
 
   return (
@@ -44,19 +44,10 @@ export function Navbar({ onOpenLogin }) {
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={onOpenLogin}
-                className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-xl shadow-sm hover:shadow transition"
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Sign In (Admin)</span>
-              </button>
-            )}
+            ) : <span className="text-sm font-medium text-slate-500">Academic portal</span>}
           </div>
         </div>
       </div>
     </header>
   );
 }
-
