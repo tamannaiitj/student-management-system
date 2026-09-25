@@ -6,12 +6,14 @@ import {
   CalendarCheck,
   CreditCard,
   Award,
-  MessageSquareText
+  MessageSquareText,
+  UserCheck
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'students', label: 'Students', icon: Users },
+  { id: 'profile', label: 'Student Profile', icon: UserCheck },
+  { id: 'students', label: 'Students Directory', icon: Users },
   { id: 'courses', label: 'B.Tech Branches', icon: GraduationCap },
   { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
   { id: 'fees', label: 'Fee Management', icon: CreditCard },

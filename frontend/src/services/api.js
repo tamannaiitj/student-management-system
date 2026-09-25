@@ -1,4 +1,4 @@
-npm const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('erp_token');
@@ -47,12 +47,23 @@ export const api = {
   // Dashboard Stats
   getDashboardStats: () => request('/dashboard/stats'),
 
-  // Students
+  // Students & Profile
   getStudents: (search = '') => request(`/students${search ? `?search=${encodeURIComponent(search)}` : ''}`),
   getStudent: (id) => request(`/students/${id}`),
+  getMyProfile: () => request('/students/profile/me'),
+  updateMyProfile: (profile) => request('/students/profile/me', { method: 'PUT', body: JSON.stringify(profile) }),
   createStudent: (student) => request('/students', { method: 'POST', body: JSON.stringify(student) }),
   updateStudent: (id, student) => request(`/students/${id}`, { method: 'PUT', body: JSON.stringify(student) }),
   deleteStudent: (id) => request(`/students/${id}`, { method: 'DELETE' }),
+
+  // Student Services (ID Card, Convocation, No Dues, Bonafide, Mess Off, Settle Dues)
+  getStudentServices: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/students/services${query ? `?${query}` : ''}`);
+  },
+  createStudentService: (serviceData) => request('/students/services', { method: 'POST', body: JSON.stringify(serviceData) }),
+  updateStudentServiceStatus: (id, statusData) => request(`/students/services/${id}/status`, { method: 'PATCH', body: JSON.stringify(statusData) }),
+  getStudentDues: (studentId) => request(`/students/dues/${studentId}`),
 
   // Courses
   getCourses: (search = '') => request(`/courses${search ? `?search=${encodeURIComponent(search)}` : ''}`),

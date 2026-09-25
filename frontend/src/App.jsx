@@ -9,27 +9,41 @@ import { Attendance } from './components/Attendance';
 import { Fees } from './components/Fees';
 import { Marks } from './components/Marks';
 import { Feedback } from './components/Feedback';
+import { Profile } from './components/Profile';
 import { AuthPage } from './components/AuthPage';
-import { LayoutDashboard, Users, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText, UserCheck } from 'lucide-react';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState('dashboard');
+  const [selectedProfileStudentId, setSelectedProfileStudentId] = useState(null);
   const { user, loading } = useAuth();
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-sm font-medium text-slate-500">Loading your session...</div>;
   }
 
+  const handleNavigate = (tab, studentId = null) => {
+    if (studentId !== null) {
+      setSelectedProfileStudentId(studentId);
+    }
+    setCurrentTab(tab);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar />
+      <Navbar onNavigate={handleNavigate} />
 
       {!user ? <AuthPage /> : <div className="flex-1 flex">
         <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full pb-20 md:pb-8">
-          {currentTab === 'dashboard' && <Dashboard onNavigate={setCurrentTab} />}
-          {currentTab === 'students' && <Students />}
+          {currentTab === 'dashboard' && <Dashboard onNavigate={handleNavigate} />}
+          {currentTab === 'profile' && <Profile initialStudentId={selectedProfileStudentId} />}
+          {currentTab === 'students' && (
+            <Students
+              onViewProfile={(studentId) => handleNavigate('profile', studentId)}
+            />
+          )}
           {currentTab === 'courses' && <Courses />}
           {currentTab === 'attendance' && <Attendance />}
           {currentTab === 'fees' && <Fees />}
@@ -42,11 +56,11 @@ function AppContent() {
       {user && <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-1 flex justify-around items-center z-40">
         {[
           { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
+          { id: 'profile', label: 'Profile', icon: UserCheck },
           { id: 'students', label: 'Students', icon: Users },
           { id: 'attendance', label: 'Attend', icon: CalendarCheck },
           { id: 'fees', label: 'Fees', icon: CreditCard },
           { id: 'marks', label: 'Marks', icon: Award },
-          { id: 'feedback', label: 'Feedback', icon: MessageSquareText },
         ].map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;

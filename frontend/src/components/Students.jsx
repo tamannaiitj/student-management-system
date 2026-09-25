@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Search, Plus, Trash2, Edit, AlertCircle, CheckCircle, GraduationCap } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, AlertCircle, CheckCircle, GraduationCap, User } from 'lucide-react';
 
 const BTECH_BRANCHES = [
   { code: 'BTECH-CSE', name: 'Computer Science & Engineering' },
@@ -16,7 +16,7 @@ const BTECH_BRANCHES = [
   { code: 'BTECH-CHEM', name: 'Chemical Engineering' }
 ];
 
-export function Students({ onSelectStudentForMarks }) {
+export function Students({ onSelectStudentForMarks, onViewProfile }) {
   const { user } = useAuth();
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState('');
@@ -271,6 +271,15 @@ export function Students({ onSelectStudentForMarks }) {
                       {s.phone && <div className="text-slate-400">{s.phone}</div>}
                     </td>
                     <td className="px-5 py-3.5 text-right space-x-1">
+                      {onViewProfile && (
+                        <button
+                          onClick={() => onViewProfile(s.id)}
+                          className="p-1.5 text-slate-500 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition"
+                          title="View Full Profile"
+                        >
+                          <User className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => handleOpenEdit(s)}
                         className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition"

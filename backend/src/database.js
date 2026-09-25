@@ -29,12 +29,48 @@ db.exec(`
   );
 `);
 
-// Safe migration: Add average_marks column to existing students table if not present
-try {
-  db.exec('ALTER TABLE students ADD COLUMN average_marks REAL DEFAULT 0.0;');
-} catch {
-  // Column already exists
+// Safe migration: Add profile columns to existing students table if not present
+const profileColumns = [
+  { name: 'average_marks', type: 'REAL DEFAULT 0.0' },
+  { name: 'department', type: 'TEXT' },
+  { name: 'degree_type', type: "TEXT DEFAULT '4-Year B.Tech'" },
+  { name: 'admission_year', type: 'INTEGER' },
+  { name: 'passing_year', type: 'INTEGER' },
+  { name: 'semester', type: 'INTEGER DEFAULT 1' },
+  { name: 'roll_no', type: 'TEXT' },
+  { name: 'gender', type: 'TEXT' },
+  { name: 'blood_group', type: 'TEXT' },
+  { name: 'category', type: 'TEXT' },
+  { name: 'nationality', type: "TEXT DEFAULT 'Indian'" },
+  { name: 'aadhar_no', type: 'TEXT' },
+  { name: 'bank_name', type: 'TEXT' },
+  { name: 'bank_account_no', type: 'TEXT' },
+  { name: 'bank_ifsc', type: 'TEXT' },
+  { name: 'father_name', type: 'TEXT' },
+  { name: 'father_occupation', type: 'TEXT' },
+  { name: 'father_phone', type: 'TEXT' },
+  { name: 'mother_name', type: 'TEXT' },
+  { name: 'mother_occupation', type: 'TEXT' },
+  { name: 'mother_phone', type: 'TEXT' },
+  { name: 'guardian_name', type: 'TEXT' },
+  { name: 'guardian_phone', type: 'TEXT' },
+  { name: 'guardian_relation', type: 'TEXT' },
+  { name: 'permanent_address', type: 'TEXT' },
+  { name: 'current_address', type: 'TEXT' },
+  { name: 'city', type: 'TEXT' },
+  { name: 'state', type: 'TEXT' },
+  { name: 'pincode', type: 'TEXT' },
+  { name: 'country', type: "TEXT DEFAULT 'India'" }
+];
+
+for (const col of profileColumns) {
+  try {
+    db.exec(`ALTER TABLE students ADD COLUMN ${col.name} ${col.type};`);
+  } catch {
+    // Column already exists
+  }
 }
+
 
 // 2. Users & Authentication Table
 db.exec(`
@@ -135,6 +171,23 @@ db.exec(`
     FOREIGN KEY(student_user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `);
+
+// 7. Student Academic Services & Requests (ID Card, Convocation, No Dues, Bonafide, Mess Off)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS student_services (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    service_type TEXT NOT NULL CHECK(service_type IN ('id_card', 'convocation', 'settle_dues', 'no_dues', 'bonafide', 'mess_off')),
+    title TEXT NOT NULL,
+    details TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'Pending',
+    reference_no TEXT UNIQUE,
+    admin_remarks TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
 
 // Triggers to automatically calculate and maintain average_marks in students table
 db.exec(`

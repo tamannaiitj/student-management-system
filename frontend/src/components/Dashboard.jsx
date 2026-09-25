@@ -49,6 +49,12 @@ export function Dashboard({ onNavigate }) {
             >
               <span>Take Attendance</span>
             </button>
+            <button
+              onClick={() => onNavigate('profile')}
+              className="bg-white/20 hover:bg-white/30 text-white font-semibold px-4 py-2 rounded-xl text-sm border border-white/20 transition flex items-center space-x-2"
+            >
+              <span>Student Profile</span>
+            </button>
           </div>
         </div>
       </div>
