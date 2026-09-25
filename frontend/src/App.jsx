@@ -8,8 +8,9 @@ import { Courses } from './components/Courses';
 import { Attendance } from './components/Attendance';
 import { Fees } from './components/Fees';
 import { Marks } from './components/Marks';
+import { Feedback } from './components/Feedback';
 import { AuthPage } from './components/AuthPage';
-import { LayoutDashboard, Users, GraduationCap, CalendarCheck, CreditCard, Award } from 'lucide-react';
+import { LayoutDashboard, Users, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText } from 'lucide-react';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState('dashboard');
@@ -33,6 +34,7 @@ function AppContent() {
           {currentTab === 'attendance' && <Attendance />}
           {currentTab === 'fees' && <Fees />}
           {currentTab === 'marks' && <Marks />}
+          {currentTab === 'feedback' && <Feedback />}
         </main>
       </div>}
 
@@ -44,6 +46,7 @@ function AppContent() {
           { id: 'attendance', label: 'Attend', icon: CalendarCheck },
           { id: 'fees', label: 'Fees', icon: CreditCard },
           { id: 'marks', label: 'Marks', icon: Award },
+          { id: 'feedback', label: 'Feedback', icon: MessageSquareText },
         ].map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;

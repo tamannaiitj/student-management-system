@@ -8,6 +8,7 @@ import { coursesRouter } from './routes/courses.js';
 import { attendanceRouter } from './routes/attendance.js';
 import { feesRouter } from './routes/fees.js';
 import { marksRouter } from './routes/marks.js';
+import { feedbackRouter } from './routes/feedback.js';
 import { db } from './database.js';
 
 const app = express();
@@ -53,6 +54,7 @@ app.use('/api/courses', coursesRouter);
 app.use('/api/attendance', attendanceRouter);
 app.use('/api/fees', feesRouter);
 app.use('/api/marks', marksRouter);
+app.use('/api/feedback', feedbackRouter);
 
 // Global Error Handler
 app.use(errorHandler);

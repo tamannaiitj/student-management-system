@@ -108,6 +108,34 @@ db.exec(`
   );
 `);
 
+// Feedback forms are created by faculty/admin and filled by student accounts.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS feedback_forms (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    professor_name TEXT NOT NULL,
+    course TEXT,
+    description TEXT,
+    questions TEXT NOT NULL,
+    status TEXT NOT NULL CHECK(status IN ('draft', 'open', 'closed')) DEFAULT 'draft',
+    created_by INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(created_by) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS feedback_responses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    form_id INTEGER NOT NULL,
+    student_user_id INTEGER NOT NULL,
+    answers TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(form_id, student_user_id),
+    FOREIGN KEY(form_id) REFERENCES feedback_forms(id) ON DELETE CASCADE,
+    FOREIGN KEY(student_user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+`);
+
 // Triggers to automatically calculate and maintain average_marks in students table
 db.exec(`
   CREATE TRIGGER IF NOT EXISTS update_avg_marks_after_insert AFTER INSERT ON marks

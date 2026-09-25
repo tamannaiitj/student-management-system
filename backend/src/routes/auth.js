@@ -138,6 +138,45 @@ authRouter.post('/login', (req, res) => {
   });
 });
 
+// Self-Service Password Reset
+authRouter.post('/reset-password', (req, res) => {
+  const { identifier, email, username, verification, student_id, full_name, new_password } = req.body;
+  const userKey = (identifier || email || username || '').trim();
+  const verifyKey = (verification || student_id || full_name || '').trim().toLowerCase();
+  const nextPassword = (new_password || '').trim();
+
+  if (!userKey || !verifyKey || !nextPassword) {
+    return res.status(400).json({ message: 'Username/email, verification detail, and new password are required.' });
+  }
+
+  if (nextPassword.length < 6) {
+    return res.status(400).json({ message: 'New password must be at least 6 characters long.' });
+  }
+
+  const user = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(userKey, userKey);
+  if (!user) {
+    return res.status(404).json({ message: 'No account found matching that username or email.' });
+  }
+
+  // Verification check: matches registered student_id, full_name, or email
+  const matchesStudentId = user.student_id && user.student_id.toLowerCase() === verifyKey;
+  const matchesFullName = user.full_name && user.full_name.toLowerCase() === verifyKey;
+  const matchesEmail = user.email && user.email.toLowerCase() === verifyKey;
+
+  if (!matchesStudentId && !matchesFullName && !matchesEmail) {
+    return res.status(400).json({
+      message: 'Verification failed: Student Roll No or Full Name does not match our records for this account.'
+    });
+  }
+
+  const passwordHash = hashPassword(nextPassword);
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, user.id);
+
+  return res.json({
+    message: 'Your password has been successfully reset! You can now sign in with your new password.'
+  });
+});
+
 // Current User Profile
 authRouter.get('/me', authenticateToken, (req, res) => {
   const user = db.prepare(

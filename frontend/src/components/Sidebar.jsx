@@ -5,7 +5,8 @@ import {
   GraduationCap,
   CalendarCheck,
   CreditCard,
-  Award
+  Award,
+  MessageSquareText
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
   { id: 'fees', label: 'Fee Management', icon: CreditCard },
   { id: 'marks', label: 'Exams & Marks', icon: Award },
+  { id: 'feedback', label: 'Professor Feedback', icon: MessageSquareText },
 ];
 
 export function Sidebar({ currentTab, setCurrentTab }) {
@@ -51,4 +53,3 @@ export function Sidebar({ currentTab, setCurrentTab }) {
     </aside>
   );
 }
-

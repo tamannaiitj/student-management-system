@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+npm const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('erp_token');
@@ -36,6 +36,13 @@ export const api = {
   getMe: () => request('/auth/me'),
   getUsers: () => request('/auth/users'),
   createUser: (userData) => request('/auth/users', { method: 'POST', body: JSON.stringify(userData) }),
+
+  // Professor feedback forms
+  getFeedbackForms: () => request('/feedback'),
+  createFeedbackForm: (form) => request('/feedback', { method: 'POST', body: JSON.stringify(form) }),
+  setFeedbackFormStatus: (id, status) => request(`/feedback/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  submitFeedback: (id, answers) => request(`/feedback/${id}/responses`, { method: 'POST', body: JSON.stringify({ answers }) }),
+  getFeedbackResponses: (id) => request(`/feedback/${id}/responses`),
 
   // Dashboard Stats
   getDashboardStats: () => request('/dashboard/stats'),
@@ -81,4 +88,3 @@ export const api = {
   updateMark: (id, markData) => request(`/marks/${id}`, { method: 'PUT', body: JSON.stringify(markData) }),
   deleteMark: (id) => request(`/marks/${id}`, { method: 'DELETE' }),
 };
-
