@@ -8,9 +8,10 @@ import { Attendance } from './components/Attendance';
 import { Fees } from './components/Fees';
 import { Marks } from './components/Marks';
 import { Feedback } from './components/Feedback';
-import { StudentSection } from './components/StudentSection';
+import { Students } from './components/Students';
+import { Scholarships } from './components/Scholarships';
 import { AuthPage } from './components/AuthPage';
-import { LayoutDashboard, UserCheck, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText } from 'lucide-react';
+import { LayoutDashboard, Users, BadgePercent, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText } from 'lucide-react';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState('dashboard');
@@ -22,14 +23,16 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar />
+      <Navbar onNavigate={setCurrentTab} />
 
       {!user ? <AuthPage /> : <div className="flex-1 flex">
         <Sidebar currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full pb-20 md:pb-8">
           {currentTab === 'dashboard' && <Dashboard onNavigate={setCurrentTab} />}
-          {currentTab === 'student-section' && <StudentSection />}
+          {(currentTab === 'students' || currentTab === 'student-section') && <Students defaultSection="directory" />}
+          {currentTab === 'profile' && <Students defaultSection="profile" />}
+          {currentTab === 'scholarships' && <Scholarships />}
           {currentTab === 'courses' && <Courses />}
           {currentTab === 'attendance' && <Attendance />}
           {currentTab === 'fees' && <Fees />}
@@ -42,7 +45,8 @@ function AppContent() {
       {user && <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-1 flex justify-around items-center z-40">
         {[
           { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
-          { id: 'student-section', label: 'Student', icon: UserCheck },
+          { id: 'students', label: 'Students', icon: Users },
+          { id: 'scholarships', label: 'Scholarships', icon: BadgePercent },
           { id: 'courses', label: 'Courses', icon: GraduationCap },
           { id: 'attendance', label: 'Attend', icon: CalendarCheck },
           { id: 'fees', label: 'Fees', icon: CreditCard },
@@ -50,7 +54,7 @@ function AppContent() {
           { id: 'feedback', label: 'Feedback', icon: MessageSquareText },
         ].map((item) => {
           const Icon = item.icon;
-          const isActive = currentTab === item.id;
+          const isActive = currentTab === item.id || (item.id === 'students' && (currentTab === 'student-section' || currentTab === 'profile'));
           return (
             <button
               key={item.id}

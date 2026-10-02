@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { Users, UserCheck, GraduationCap, CalendarCheck, CreditCard, ArrowRight, Activity, Award } from 'lucide-react';
+import { Users, UserCheck, GraduationCap, CalendarCheck, CreditCard, ArrowRight, Activity, Award, BadgePercent } from 'lucide-react';
 
 export function Dashboard({ onNavigate }) {
   const [stats, setStats] = useState(null);
@@ -37,17 +37,18 @@ export function Dashboard({ onNavigate }) {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
-              onClick={() => onNavigate('student-section')}
+              onClick={() => onNavigate('students')}
               className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold px-4 py-2 rounded-xl text-sm shadow transition flex items-center space-x-2"
             >
-              <span>Student Section</span>
+              <span>Students Portal</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
-              onClick={() => onNavigate('attendance')}
-              className="bg-indigo-800/60 hover:bg-indigo-800 text-white font-semibold px-4 py-2 rounded-xl text-sm border border-indigo-400/30 transition flex items-center space-x-2"
+              onClick={() => onNavigate('scholarships')}
+              className="bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-4 py-2 rounded-xl text-sm shadow transition flex items-center space-x-2"
             >
-              <span>Take Attendance</span>
+              <BadgePercent className="w-4 h-4 text-slate-900" />
+              <span>Fee Remission</span>
             </button>
             <button
               onClick={() => onNavigate('profile')}
@@ -115,20 +116,36 @@ export function Dashboard({ onNavigate }) {
       </div>
 
       {/* Quick Navigation Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <div
-          onClick={() => onNavigate('student-section')}
+          onClick={() => onNavigate('students')}
           className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-400 hover:shadow-md transition cursor-pointer group"
         >
           <div className="flex items-center justify-between">
             <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition">
-              <UserCheck className="w-6 h-6" />
+              <Users className="w-6 h-6" />
             </div>
             <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition" />
           </div>
-          <h4 className="font-bold text-slate-900 mt-4 text-base">Student Section Portal</h4>
+          <h4 className="font-bold text-slate-900 mt-4 text-base">Students Hub</h4>
           <p className="text-xs text-slate-500 mt-1">
-            Access tabular profile, ID card requests, mess off leaves, well-being, convocation, & bonafide certificates.
+            Directory, Full Profile, ID Card, Convocation, Settle Dues, No Dues, Bonafide, & Mess Off.
+          </p>
+        </div>
+
+        <div
+          onClick={() => onNavigate('scholarships')}
+          className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-amber-400 hover:shadow-md transition cursor-pointer group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl group-hover:bg-amber-500 group-hover:text-white transition">
+              <BadgePercent className="w-6 h-6" />
+            </div>
+            <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-1 transition" />
+          </div>
+          <h4 className="font-bold text-slate-900 mt-4 text-base">Fee Remission & Aid</h4>
+          <p className="text-xs text-slate-500 mt-1">
+            Apply for 100% or 66.67% tuition fee waiver for guardian income &lt; ₹5 Lakh/annum.
           </p>
         </div>
 
@@ -144,7 +161,7 @@ export function Dashboard({ onNavigate }) {
           </div>
           <h4 className="font-bold text-slate-900 mt-4 text-base">Attendance Tracker</h4>
           <p className="text-xs text-slate-500 mt-1">
-            Mark daily class attendance strictly with Present / Absent and review student attendance percentages.
+            Mark daily class attendance strictly with Present / Absent and review student percentages.
           </p>
         </div>
 
@@ -158,9 +175,9 @@ export function Dashboard({ onNavigate }) {
             </div>
             <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-purple-600 group-hover:translate-x-1 transition" />
           </div>
-          <h4 className="font-bold text-slate-900 mt-4 text-base">Examinations & Transcripts</h4>
+          <h4 className="font-bold text-slate-900 mt-4 text-base">Exams & Transcripts</h4>
           <p className="text-xs text-slate-500 mt-1">
-            Enter marks, view letter grades (A+ to F), and auto-sync student academic records in SQLite.
+            Enter marks, view letter grades (A+ to F), and auto-sync student academic records.
           </p>
         </div>
       </div>

@@ -298,11 +298,159 @@ studentsRouter.get('/dues/:studentId', (request, response) => {
     pending_fees: pendingFees,
     paid_fees: paidFees,
     dues_breakdown: duesBreakdown,
-    total_pending: totalPending
-  });
+// 4. Scholarship & Fee Remission Applications (<1L: 100%, 1L-5L: 2/3rd)
+studentsRouter.get('/remission', (request, response) => {
+  const { student_id } = request.query;
+  let query = `
+    SELECT r.*, s.first_name, s.last_name, s.course, s.year, s.email, s.phone, s.roll_no
+    FROM fee_remissions r
+    LEFT JOIN students s ON s.student_id = r.student_id
+  `;
+  const params = [];
+  const conditions = [];
+
+  if (request.user.role === 'student') {
+    const user = db.prepare('SELECT student_id, email FROM users WHERE id = ?').get(request.user.id);
+    let sId = user?.student_id;
+    if (!sId && user?.email) {
+      const student = db.prepare('SELECT student_id FROM students WHERE email = ?').get(user.email);
+      sId = student?.student_id;
+    }
+    conditions.push('(r.student_id = ? OR r.student_id = ?)');
+    params.push(sId || 'unknown', request.user.student_id || 'unknown');
+  } else if (student_id) {
+    conditions.push('r.student_id = ?');
+    params.push(student_id);
+  }
+
+  if (conditions.length > 0) {
+    query += ' WHERE ' + conditions.join(' AND ');
+  }
+  query += ' ORDER BY r.id DESC';
+
+  const rows = db.prepare(query).all(...params);
+  return response.json(rows);
 });
 
-// 4. Search and list all students (admin, faculty)
+studentsRouter.post('/remission', (request, response) => {
+  const {
+    student_id,
+    annual_income,
+    certificate_no,
+    issuing_authority,
+    financial_year,
+    base_tuition_fee = 100000
+  } = request.body;
+
+  const sid = (student_id || request.user.student_id || '').trim();
+  if (!sid) {
+    return response.status(400).json({ message: 'student_id is required.' });
+  }
+
+  const income = Number(annual_income);
+  if (isNaN(income) || income < 0) {
+    return response.status(400).json({ message: 'Valid annual income is required.' });
+  }
+
+  // Hard Rule: Overall income must be lower than 5 Lakh per annum
+  if (income >= 500000) {
+    return response.status(400).json({
+      message: 'Not eligible: Overall family/guardian income must be lower than ₹5,00,000 (5 Lakh) per annum to qualify for Fee Remission.'
+    });
+  }
+
+  if (!certificate_no || !issuing_authority) {
+    return response.status(400).json({ message: 'Income certificate number and issuing authority are mandatory.' });
+  }
+
+  const baseFee = Number(base_tuition_fee) || 100000;
+  let remissionCategory = '';
+  let remissionPercentage = 0;
+  let remissionAmount = 0;
+  let payableFee = 0;
+
+  if (income < 100000) {
+    // Income < 1 Lakh: Full remission (100%)
+    remissionCategory = 'FULL_REMISSION';
+    remissionPercentage = 100;
+    remissionAmount = baseFee;
+    payableFee = 0;
+  } else {
+    // Income 1 Lakh - 5 Lakh: 2/3rd remission (66.67%)
+    remissionCategory = 'TWO_THIRD_REMISSION';
+    remissionPercentage = 66.67;
+    remissionAmount = Math.round((baseFee * (2 / 3)) * 100) / 100;
+    payableFee = Math.round((baseFee * (1 / 3)) * 100) / 100;
+  }
+
+  const refNo = `REM-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+  const finYear = financial_year || '2025-2026';
+
+  const result = db.prepare(`
+    INSERT INTO fee_remissions (
+      student_id, annual_income, remission_category, remission_percentage,
+      base_tuition_fee, remission_amount, payable_fee,
+      certificate_no, issuing_authority, financial_year,
+      status, reference_no
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Submitted', ?)
+  `).run(
+    sid, income, remissionCategory, remissionPercentage,
+    baseFee, remissionAmount, payableFee,
+    certificate_no.trim(), issuing_authority.trim(), finYear,
+    refNo
+  );
+
+  const created = db.prepare('SELECT * FROM fee_remissions WHERE id = ?').get(result.lastInsertRowid);
+  return response.status(201).json(created);
+});
+
+studentsRouter.patch('/remission/:id/status', allowRoles('admin', 'faculty'), (request, response) => {
+  const { status, admin_remarks } = request.body;
+  const allowed = ['Submitted', 'Verified', 'Approved', 'Rejected'];
+  if (!status || !allowed.includes(status)) {
+    return response.status(400).json({ message: `Status must be one of: ${allowed.join(', ')}.` });
+  }
+
+  const existing = db.prepare('SELECT * FROM fee_remissions WHERE id = ?').get(request.params.id);
+  if (!existing) return response.status(404).json({ message: 'Remission application not found.' });
+
+  db.prepare(`
+    UPDATE fee_remissions
+    SET status = ?, admin_remarks = COALESCE(?, admin_remarks), updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(status, admin_remarks || null, request.params.id);
+
+  // If approved, update existing pending tuition fee invoice in fees table to payable_fee
+  if (status === 'Approved') {
+    const pendingTuition = db.prepare(`
+      SELECT * FROM fees
+      WHERE student_id = ? AND status = 'Pending' AND title LIKE '%Tuition%'
+      ORDER BY id DESC LIMIT 1
+    `).get(existing.student_id);
+
+    if (pendingTuition) {
+      if (existing.payable_fee === 0) {
+        db.prepare(`
+          UPDATE fees
+          SET status = 'Paid', paid_date = CURRENT_TIMESTAMP, payment_mode = 'Fee Remission (Govt Subsidy)',
+              receipt_no = ?
+          WHERE id = ?
+        `).run(`RCP-REM-${Math.floor(1000 + Math.random() * 9000)}`, pendingTuition.id);
+      } else {
+        db.prepare(`
+          UPDATE fees
+          SET amount = ?, title = ?
+          WHERE id = ?
+        `).run(existing.payable_fee, `${pendingTuition.title} (After 2/3rd Remission)`, pendingTuition.id);
+      }
+    }
+  }
+
+  const updated = db.prepare('SELECT * FROM fee_remissions WHERE id = ?').get(request.params.id);
+  return response.json(updated);
+});
+
+// 5. Search and list all students (admin, faculty)
 studentsRouter.get('/', (request, response) => {
   const search = request.query.search?.toString().trim() || '';
   const statement = search

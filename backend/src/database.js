@@ -188,6 +188,29 @@ db.exec(`
   );
 `);
 
+// 8. Scholarships & Fee Remission Applications (<1L: 100% remission, 1L-5L: 2/3rd remission)
+db.exec(`
+  CREATE TABLE IF NOT EXISTS fee_remissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    annual_income REAL NOT NULL CHECK(annual_income >= 0),
+    remission_category TEXT NOT NULL CHECK(remission_category IN ('FULL_REMISSION', 'TWO_THIRD_REMISSION')),
+    remission_percentage REAL NOT NULL,
+    base_tuition_fee REAL NOT NULL DEFAULT 100000,
+    remission_amount REAL NOT NULL,
+    payable_fee REAL NOT NULL,
+    certificate_no TEXT NOT NULL,
+    issuing_authority TEXT NOT NULL,
+    financial_year TEXT NOT NULL,
+    status TEXT NOT NULL CHECK(status IN ('Submitted', 'Verified', 'Approved', 'Rejected')) DEFAULT 'Submitted',
+    reference_no TEXT UNIQUE,
+    admin_remarks TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+
 
 // Triggers to automatically calculate and maintain average_marks in students table
 db.exec(`

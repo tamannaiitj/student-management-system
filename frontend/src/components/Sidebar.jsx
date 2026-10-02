@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   LayoutDashboard,
-  UserCheck,
+  Users,
+  BadgePercent,
   GraduationCap,
   CalendarCheck,
   CreditCard,
@@ -11,7 +12,8 @@ import {
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'student-section', label: 'Student Section', icon: UserCheck },
+  { id: 'students', label: 'Students', icon: Users },
+  { id: 'scholarships', label: 'Scholarships & Remission', icon: BadgePercent },
   { id: 'courses', label: 'B.Tech Branches', icon: GraduationCap },
   { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
   { id: 'fees', label: 'Fee Management', icon: CreditCard },
@@ -28,7 +30,7 @@ export function Sidebar({ currentTab, setCurrentTab }) {
         </div>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
-          const isActive = currentTab === item.id;
+          const isActive = currentTab === item.id || (item.id === 'students' && (currentTab === 'student-section' || currentTab === 'profile'));
           return (
             <button
               key={item.id}
