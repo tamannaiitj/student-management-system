@@ -3,14 +3,14 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
-import { Students } from './components/Students';
 import { Courses } from './components/Courses';
 import { Attendance } from './components/Attendance';
 import { Fees } from './components/Fees';
 import { Marks } from './components/Marks';
 import { Feedback } from './components/Feedback';
+import { StudentSection } from './components/StudentSection';
 import { AuthPage } from './components/AuthPage';
-import { LayoutDashboard, Users, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText } from 'lucide-react';
+import { LayoutDashboard, UserCheck, GraduationCap, CalendarCheck, CreditCard, Award, MessageSquareText } from 'lucide-react';
 
 function AppContent() {
   const [currentTab, setCurrentTab] = useState('dashboard');
@@ -29,7 +29,7 @@ function AppContent() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full pb-20 md:pb-8">
           {currentTab === 'dashboard' && <Dashboard onNavigate={setCurrentTab} />}
-          {currentTab === 'students' && <Students />}
+          {currentTab === 'student-section' && <StudentSection />}
           {currentTab === 'courses' && <Courses />}
           {currentTab === 'attendance' && <Attendance />}
           {currentTab === 'fees' && <Fees />}
@@ -42,7 +42,8 @@ function AppContent() {
       {user && <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-1 flex justify-around items-center z-40">
         {[
           { id: 'dashboard', label: 'Home', icon: LayoutDashboard },
-          { id: 'students', label: 'Students', icon: Users },
+          { id: 'student-section', label: 'Student', icon: UserCheck },
+          { id: 'courses', label: 'Courses', icon: GraduationCap },
           { id: 'attendance', label: 'Attend', icon: CalendarCheck },
           { id: 'fees', label: 'Fees', icon: CreditCard },
           { id: 'marks', label: 'Marks', icon: Award },

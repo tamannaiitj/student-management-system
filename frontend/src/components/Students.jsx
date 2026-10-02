@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Search, Plus, Trash2, Edit, AlertCircle, CheckCircle, GraduationCap } from 'lucide-react';
+import { Search, Plus, Trash2, UserRound, AlertCircle, CheckCircle, GraduationCap } from 'lucide-react';
 
 const BTECH_BRANCHES = [
   { code: 'BTECH-CSE', name: 'Computer Science & Engineering' },
@@ -87,6 +87,10 @@ export function Students({ onSelectStudentForMarks }) {
     setIsModalOpen(true);
   };
 
+  const handleOpenProfile = (student) => {
+    handleOpenEdit(student);
+  };
+
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Are you sure you want to delete student "${name}"?`)) return;
     try {
@@ -145,7 +149,7 @@ export function Students({ onSelectStudentForMarks }) {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">B.Tech Student Directory</h2>
+          <h2 className="text-2xl font-bold text-slate-900">Student Profiles</h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Manage students enrolled in 4-year engineering programs with live computed average marks.
           </p>
@@ -221,7 +225,7 @@ export function Students({ onSelectStudentForMarks }) {
             <thead className="bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase text-slate-500 tracking-wider">
               <tr>
                 <th className="px-5 py-3.5">Roll No</th>
-                <th className="px-5 py-3.5">Student Name</th>
+            <th className="px-5 py-3.5">Student Profile</th>
                 <th className="px-5 py-3.5">Branch</th>
                 <th className="px-5 py-3.5">Year</th>
                 <th className="px-5 py-3.5">Average Marks (SQLite)</th>
@@ -250,8 +254,15 @@ export function Students({ onSelectStudentForMarks }) {
                     <td className="px-5 py-3.5 font-mono text-xs font-bold text-indigo-700">
                       {s.student_id}
                     </td>
-                    <td className="px-5 py-3.5 font-semibold text-slate-900">
-                      {s.first_name} {s.last_name}
+                    <td className="px-5 py-3.5">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenProfile(s)}
+                        className="font-semibold text-indigo-700 hover:text-indigo-900 hover:underline text-left"
+                        title={`Open ${s.first_name}'s student profile`}
+                      >
+                        {s.first_name} {s.last_name}
+                      </button>
                     </td>
                     <td className="px-5 py-3.5">
                       <span className="px-2.5 py-1 bg-slate-100 text-slate-700 font-semibold rounded-lg text-xs border border-slate-200">
@@ -272,11 +283,13 @@ export function Students({ onSelectStudentForMarks }) {
                     </td>
                     <td className="px-5 py-3.5 text-right space-x-1">
                       <button
-                        onClick={() => handleOpenEdit(s)}
-                        className="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition"
-                        title="Edit student"
+                        type="button"
+                        onClick={() => handleOpenProfile(s)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 hover:bg-indigo-50 rounded-lg transition"
+                        title="Open student profile form"
                       >
-                        <Edit className="w-4 h-4" />
+                        <UserRound className="w-4 h-4" />
+                        Profile
                       </button>
                       <button
                         onClick={() => handleDelete(s.id, `${s.first_name} ${s.last_name}`)}
@@ -294,18 +307,35 @@ export function Students({ onSelectStudentForMarks }) {
         </div>
       </div>
 
-      {/* Enroll / Edit Modal */}
+      {/* Student profile form / enrollment form */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100">
-            <h3 className="text-xl font-bold text-slate-900">
-              {editingStudent ? 'Edit Student Details' : 'Enroll New B.Tech Student'}
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              All B.Tech engineering programs are strictly 4-year undergraduate degrees.
-            </p>
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-100">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-slate-900">
+                  {editingStudent ? `${editingStudent.first_name} ${editingStudent.last_name} - Student Profile` : 'Enroll New B.Tech Student'}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  {editingStudent ? 'Review and update the student personal and academic information.' : 'Complete the personal and academic sections to create the student profile.'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 text-xl leading-none"
+                aria-label="Close student profile"
+              >
+                Close
+              </button>
+            </div>
 
-            <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+            <form onSubmit={handleSubmit} className="mt-5 space-y-5">
+              <section className="space-y-3">
+                <div className="border-b border-slate-200 pb-2">
+                  <h4 className="text-sm font-bold text-slate-800">Personal Information</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Student identity and contact details</p>
+                </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase">Roll No / Student ID</label>
@@ -319,17 +349,13 @@ export function Students({ onSelectStudentForMarks }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase">Academic Year</label>
-                  <select
-                    value={formData.year}
-                    onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                    className="mt-1 w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
-                  >
-                    <option value="1">1st Year</option>
-                    <option value="2">2nd Year</option>
-                    <option value="3">3rd Year</option>
-                    <option value="4">4th Year</option>
-                  </select>
+                  <label className="block text-xs font-bold text-slate-700 uppercase">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={formData.date_of_birth}
+                    onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
+                    className="mt-1 w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
                 </div>
               </div>
 
@@ -355,22 +381,6 @@ export function Students({ onSelectStudentForMarks }) {
                   />
                 </div>
               </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase">B.Tech Engineering Branch</label>
-                <select
-                  value={formData.course}
-                  onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                  className="mt-1 w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
-                >
-                  {BTECH_BRANCHES.map((b) => (
-                    <option key={b.code} value={b.code}>
-                      {b.code} — {b.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase">Email</label>
@@ -393,6 +403,41 @@ export function Students({ onSelectStudentForMarks }) {
                   />
                 </div>
               </div>
+              </section>
+
+              <section className="space-y-3">
+                <div className="border-b border-slate-200 pb-2">
+                  <h4 className="text-sm font-bold text-slate-800">Academic Information</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Engineering branch and current year</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">Academic Year</label>
+                    <select
+                      value={formData.year}
+                      onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                      className="mt-1 w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                    >
+                      <option value="1">1st Year</option>
+                      <option value="2">2nd Year</option>
+                      <option value="3">3rd Year</option>
+                      <option value="4">4th Year</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase">B.Tech Engineering Branch</label>
+                    <select
+                      value={formData.course}
+                      onChange={(e) => setFormData({ ...formData, course: e.target.value })}
+                      className="mt-1 w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                    >
+                      {BTECH_BRANCHES.map((b) => (
+                        <option key={b.code} value={b.code}>{b.code} — {b.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </section>
 
               <div className="flex justify-end space-x-3 pt-3">
                 <button

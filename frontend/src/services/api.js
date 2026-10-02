@@ -1,4 +1,4 @@
-npm const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('erp_token');
@@ -87,4 +87,24 @@ export const api = {
   addMark: (markData) => request('/marks', { method: 'POST', body: JSON.stringify(markData) }),
   updateMark: (id, markData) => request(`/marks/${id}`, { method: 'PUT', body: JSON.stringify(markData) }),
   deleteMark: (id) => request(`/marks/${id}`, { method: 'DELETE' }),
+
+  // Student Services (Profile, ID Card, Mess Off, Well-Being, Convocation, Bonafide)
+  getStudentFullProfile: (studentId) => request(`/student-services/profile/${studentId}`),
+  updateStudentFullProfile: (studentId, data) => request(`/student-services/profile/${studentId}`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  getIdCardApplications: (studentId = '') => request(`/student-services/id-card${studentId ? `?student_id=${encodeURIComponent(studentId)}` : ''}`),
+  submitIdCardApplication: (data) => request('/student-services/id-card', { method: 'POST', body: JSON.stringify(data) }),
+
+  getMessOffApplications: (studentId = '') => request(`/student-services/mess-off${studentId ? `?student_id=${encodeURIComponent(studentId)}` : ''}`),
+  submitMessOffApplication: (data) => request('/student-services/mess-off', { method: 'POST', body: JSON.stringify(data) }),
+  forwardMessOffApplication: (id, data = {}) => request(`/student-services/mess-off/${id}/forward`, { method: 'PUT', body: JSON.stringify(data) }),
+
+  getWellbeingRequests: (studentId = '') => request(`/student-services/well-being${studentId ? `?student_id=${encodeURIComponent(studentId)}` : ''}`),
+  submitWellbeingRequest: (data) => request('/student-services/well-being', { method: 'POST', body: JSON.stringify(data) }),
+
+  getConvocationDetails: (studentId) => request(`/student-services/convocation/${studentId}`),
+  submitConvocationRegistration: (data) => request('/student-services/convocation', { method: 'POST', body: JSON.stringify(data) }),
+
+  getBonafideRequests: (studentId = '') => request(`/student-services/bonafide${studentId ? `?student_id=${encodeURIComponent(studentId)}` : ''}`),
+  submitBonafideRequest: (data) => request('/student-services/bonafide', { method: 'POST', body: JSON.stringify(data) }),
 };

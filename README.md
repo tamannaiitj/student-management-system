@@ -4,6 +4,13 @@ A full-stack Enterprise Resource Planning (ERP) application designed for college
 
 ## Key Modules & Features
 - **10 B.Tech Engineering Branches**: Pre-configured for CSE, AI & Data Science, IT, ECE, EEE, Mechanical, Civil, Materials Engineering, Bioengineering, and Chemical Engineering.
+- **Comprehensive Student Services Section**:
+  - **Student Profile**: Single unified tabular profile covering Personal details, Medical & Blood Group, College details, Permanent & Corresponding Addresses, Parents details & Annual Income, and Bank Account details with edit & submit capabilities.
+  - **ID Card Application**: Official student identity card requisition with passport photo upload, digital signature upload, blood group, identification marks, and emergency contacts.
+  - **Mess Off Application Report**: Leave request for hostel mess reduction with mess off types (Sick Leave, Vacation, Academic Tour, Personal), campus transit ticket verification, departure & return dates, **Raise Request**, **Forward to Warden**, and **Reset Form** features.
+  - **Student Well-Being Form**: Confidential mental wellness and counseling appointment request portal.
+  - **Student Convocation Portal**: Degree conferment registration, academic robe sizing (S/M/L/XL), attendance mode (in-person vs. absentia), guest passes, and degree dispatch tracking.
+  - **Bonafide Certificate Generator**: Instant application, approval tracking, and printable official institutional bonafide certificates for education loans, visa, internships, and bus passes.
 - **Automated Academic Performance**: Automatically computes and updates student `average_marks` directly in SQLite using database triggers.
 - **Strict Attendance Tracker**: Class-wise daily attendance supporting strictly **`Present`** and **`Absent`** with percentage calculations.
 - **Fee Management**: Student tuition fee invoices, payment processing, and printable receipt generation (`RCP-...`).
@@ -27,7 +34,7 @@ student-erp/
 │   └── package.json
 ├── frontend/           # React 18 + Vite + Tailwind CSS Dashboard
 │   ├── src/
-│   │   ├── components/ # Dashboard, Students, Attendance, Fees, Marks, Courses, Login
+│   │   ├── components/ # Dashboard, Courses, Attendance, Fees, Marks, Feedback, Login
 │   │   ├── context/    # AuthContext (JWT & roles)
 │   │   ├── services/   # Centralized API service
 │   │   ├── App.jsx     # Main layout and view navigation

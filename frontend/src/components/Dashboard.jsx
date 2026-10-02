@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
-import { Users, GraduationCap, CalendarCheck, CreditCard, ArrowRight, Activity, Award } from 'lucide-react';
+import { Users, UserCheck, GraduationCap, CalendarCheck, CreditCard, ArrowRight, Activity, Award } from 'lucide-react';
 
 export function Dashboard({ onNavigate }) {
   const [stats, setStats] = useState(null);
@@ -37,10 +37,10 @@ export function Dashboard({ onNavigate }) {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button
-              onClick={() => onNavigate('students')}
+              onClick={() => onNavigate('student-section')}
               className="bg-white text-indigo-700 hover:bg-indigo-50 font-bold px-4 py-2 rounded-xl text-sm shadow transition flex items-center space-x-2"
             >
-              <span>Manage Students</span>
+              <span>Student Section</span>
               <ArrowRight className="w-4 h-4" />
             </button>
             <button
@@ -111,18 +111,18 @@ export function Dashboard({ onNavigate }) {
       {/* Quick Navigation Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div
-          onClick={() => onNavigate('students')}
+          onClick={() => onNavigate('student-section')}
           className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-indigo-400 hover:shadow-md transition cursor-pointer group"
         >
           <div className="flex items-center justify-between">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition">
-              <Users className="w-6 h-6" />
+            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition">
+              <UserCheck className="w-6 h-6" />
             </div>
             <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition" />
           </div>
-          <h4 className="font-bold text-slate-900 mt-4 text-base">Student Directory & Marks</h4>
+          <h4 className="font-bold text-slate-900 mt-4 text-base">Student Section Portal</h4>
           <p className="text-xs text-slate-500 mt-1">
-            Search, filter by branch & year (1–4), and monitor real-time computed average marks.
+            Access tabular profile, ID card requests, mess off leaves, well-being, convocation, & bonafide certificates.
           </p>
         </div>
 

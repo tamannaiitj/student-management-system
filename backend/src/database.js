@@ -210,3 +210,152 @@ try {
 } catch (err) {
   console.warn('[Database] B.Tech course seed notice:', err.message);
 }
+
+// 7. Comprehensive Student Profiles
+db.exec(`
+  CREATE TABLE IF NOT EXISTS student_full_profiles (
+    student_id TEXT PRIMARY KEY,
+    full_name TEXT NOT NULL,
+    dob TEXT,
+    gender TEXT,
+    category TEXT,
+    nationality TEXT DEFAULT 'Indian',
+    course TEXT NOT NULL,
+    year INTEGER NOT NULL DEFAULT 1,
+    semester INTEGER NOT NULL DEFAULT 1,
+    enrollment_date TEXT,
+    hostel_name TEXT,
+    room_no TEXT,
+    permanent_address TEXT,
+    corresponding_address TEXT,
+    city TEXT,
+    state TEXT,
+    pincode TEXT,
+    father_name TEXT,
+    father_occupation TEXT,
+    mother_name TEXT,
+    mother_occupation TEXT,
+    family_annual_income TEXT,
+    parents_phone TEXT,
+    parents_email TEXT,
+    blood_group TEXT,
+    identification_mark TEXT,
+    bank_account_name TEXT,
+    bank_name TEXT,
+    account_no TEXT,
+    ifsc_code TEXT,
+    bank_branch TEXT,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// 8. ID Card Applications
+db.exec(`
+  CREATE TABLE IF NOT EXISTS id_card_applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    programme TEXT NOT NULL,
+    dob TEXT NOT NULL,
+    blood_group TEXT NOT NULL,
+    identification_mark TEXT NOT NULL,
+    emergency_contact TEXT NOT NULL,
+    corresponding_address TEXT NOT NULL,
+    photo_url TEXT,
+    signature_url TEXT,
+    status TEXT NOT NULL DEFAULT 'Submitted' CHECK(status IN ('Submitted', 'Under Review', 'Approved', 'Printed')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// 9. Mess Off Applications
+db.exec(`
+  CREATE TABLE IF NOT EXISTS mess_off_applications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    email TEXT NOT NULL,
+    mess_off_type TEXT NOT NULL,
+    no_of_days INTEGER NOT NULL CHECK(no_of_days >= 1),
+    leaving_date TEXT NOT NULL,
+    returning_date TEXT NOT NULL,
+    ticket_ref TEXT,
+    remarks TEXT,
+    status TEXT NOT NULL DEFAULT 'Pending' CHECK(status IN ('Pending', 'Forwarded', 'Approved', 'Rejected')),
+    forwarded_to TEXT,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// 10. Student Well-Being Form
+db.exec(`
+  CREATE TABLE IF NOT EXISTS wellbeing_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    student_name TEXT NOT NULL,
+    concern_type TEXT NOT NULL,
+    urgency TEXT NOT NULL DEFAULT 'Routine',
+    preferred_slot TEXT,
+    notes TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'Received' CHECK(status IN ('Received', 'Scheduled', 'Resolved')),
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// 11. Student Convocation Registrations
+db.exec(`
+  CREATE TABLE IF NOT EXISTS convocation_details (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL UNIQUE,
+    student_name TEXT NOT NULL,
+    programme TEXT NOT NULL,
+    passing_year INTEGER NOT NULL,
+    robe_size TEXT NOT NULL CHECK(robe_size IN ('S', 'M', 'L', 'XL')),
+    attendance_mode TEXT NOT NULL CHECK(attendance_mode IN ('In-Person', 'In-Absentia')),
+    guest_count INTEGER NOT NULL DEFAULT 0,
+    dispatch_address TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'Registered',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// 12. Bonafide Certificate Applications
+db.exec(`
+  CREATE TABLE IF NOT EXISTS bonafide_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id TEXT NOT NULL,
+    student_name TEXT NOT NULL,
+    programme TEXT NOT NULL,
+    year INTEGER NOT NULL,
+    purpose TEXT NOT NULL,
+    details TEXT,
+    certificate_no TEXT UNIQUE,
+    status TEXT NOT NULL DEFAULT 'Approved',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  );
+`);
+
+// Seed default profile for demo student if empty
+try {
+  const profileCount = db.prepare('SELECT COUNT(*) as count FROM student_full_profiles').get().count;
+  if (profileCount === 0) {
+    db.prepare(`
+      INSERT INTO student_full_profiles (
+        student_id, full_name, dob, gender, category, nationality,
+        course, year, semester, enrollment_date, hostel_name, room_no,
+        permanent_address, corresponding_address, city, state, pincode,
+        father_name, father_occupation, mother_name, mother_occupation, family_annual_income, parents_phone, parents_email,
+        blood_group, identification_mark,
+        bank_account_name, bank_name, account_no, ifsc_code, bank_branch
+      ) VALUES (
+        'BT2026CSE01', 'Asha Sharma', '2005-08-12', 'Female', 'General', 'Indian',
+        'BTECH-CSE', 2, 3, '2024-08-01', 'Aryabhata Hall of Residence', 'B-304',
+        '124 Shanti Vihar, Civil Lines', 'Aryabhata Hall, Room B-304, Campus Hostel', 'Jaipur', 'Rajasthan', '302006',
+        'Ramesh Sharma', 'Government Officer', 'Sunita Sharma', 'High School Teacher', '₹8,50,000 / annum', '+91 98290 12345', 'ramesh.sharma@example.com',
+        'B+', 'Small mole on right collarbone',
+        'Asha Sharma', 'State Bank of India', '39820194821', 'SBIN0001234', 'University Campus Branch'
+      )
+    `).run();
+  }
+} catch (e) {
+  console.warn('[Database] Student profile seed notice:', e.message);
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   LayoutDashboard,
-  Users,
+  UserCheck,
   GraduationCap,
   CalendarCheck,
   CreditCard,
@@ -11,7 +11,7 @@ import {
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'students', label: 'Students', icon: Users },
+  { id: 'student-section', label: 'Student Section', icon: UserCheck },
   { id: 'courses', label: 'B.Tech Branches', icon: GraduationCap },
   { id: 'attendance', label: 'Attendance', icon: CalendarCheck },
   { id: 'fees', label: 'Fee Management', icon: CreditCard },
